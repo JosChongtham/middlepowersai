@@ -26,7 +26,7 @@ table, .date { font-variant-numeric: tabular-nums; }
 .tag { display: inline-flex; align-items: center; gap: 7px; padding: 3px 11px; border-radius: 999px; background: #FFFFFF; font-size: 13px; font-weight: 700; color: #2A313C; }
 .tag.up { background: #E2A100; color: #1B1300; }
 .dot { width: 9px; height: 9px; border-radius: 50%; }
-.dot.mp { background: #0B7A6B; } .dot.us { background: #1F3FBF; } .dot.cn { background: #B3402F; } .dot.un { background: #4A5361; }
+.dot.mp { background: #0B7A6B; } .dot.us { background: #1F3FBF; } .dot.cn { background: #B3402F; } .dot.un { background: #4A5361; } .dot.eu { background: #5B47B8; } .dot.intl { background: #9A6B00; }
 .src { font-size: 14px; color: #4A5361; }
 .empty { padding: 20px 0; color: #4A5361; }
 .rail { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 2px; padding: 2px 2px 14px; scrollbar-width: thin; scrollbar-color: #AEB7C6 transparent; }

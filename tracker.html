@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tracker · middlepowers.si</title>
-<meta name="description" content="A sourced, filterable list of the declarations, pacts and summits shaping middle-power AI coordination.">
+<meta name="description" content="A sourced, filterable list of AI laws, treaties, declarations and summits worldwide, with middle-power coalitions marked.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%230E1116' stroke-width='1.6'%3E%3Ccircle cx='16' cy='16' r='14'/%3E%3Cellipse cx='16' cy='16' rx='6' ry='14'/%3E%3Cline x1='2' y1='16' x2='30' y2='16'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23E2A100' stroke='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,23 +30,36 @@ middlepowers.si
 </header>
 <main style="display: flex; flex-direction: column; gap: 28px">
 <div style="display: flex; flex-direction: column; gap: 14px; border-top: 1px solid #DDE2EC; padding-top: 22px">
-<div style="font-family: 'Atkinson Hyperlegible Mono', Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #1F3FBF">Tracker · 12 entries</div>
-<h1 style="margin: 0; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-weight: 600; font-size: clamp(40px, 7vw, 76px); line-height: 1; letter-spacing: -0.025em; text-wrap: balance">Every agreement, sourced and dated</h1>
-<p style="margin: 0; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-size: 22px; line-height: 1.4; color: #2A313C; max-width: 34em">Declarations, pacts, organisations and summits that shape how states outside Washington and Beijing coordinate on AI. Signatory counts move, so each count carries its date.</p>
+<div style="font-family: 'Atkinson Hyperlegible Mono', Menlo, monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #1F3FBF">Tracker · 47 entries</div>
+<h1 style="margin: 0; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-weight: 600; font-size: clamp(40px, 7vw, 76px); line-height: 1; letter-spacing: -0.025em; text-wrap: balance">Every AI rule, pact and summit, sourced and dated</h1>
+<p style="margin: 0; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-size: 22px; line-height: 1.4; color: #2A313C; max-width: 34em">Laws, treaties, declarations, institutions and summits on AI governance and safety, from anywhere in the world. Middle-power coalitions carry a teal dot. Signatory counts move, so each count carries its date.</p>
 </div>
 <div style="display: flex; flex-direction: column; gap: 12px">
 <div class="chips" id="themes" role="group" aria-label="Filter by theme"></div>
 <div class="filters">
 <label class="vh" for="q">Search entries</label>
-<input class="field search" id="q" type="search" placeholder="Search a country or name">
+<input class="field search" id="q" type="search" placeholder="Search a country, law or name">
+<label class="vh" for="region">Filter by region</label>
+<select class="field" id="region">
+<option value="">Anywhere</option>
+<option>Global</option>
+<option>Europe</option>
+<option>Americas</option>
+<option>Asia-Pacific</option>
+<option>Middle East and Africa</option>
+</select>
 <label class="vh" for="lead">Filter by who leads</label>
 <select class="field" id="lead">
 <option value="">Led by anyone</option>
 <option value="mp">Middle powers</option>
 <option value="us">United States</option>
 <option value="cn">China</option>
+<option value="eu">EU and Council of Europe</option>
 <option value="un">United Nations</option>
+<option value="intl">G7, OECD and other clubs</option>
 </select>
+<label class="vh" for="type">Filter by type</label>
+<select class="field" id="type"><option value="">Any type</option></select>
 </div>
 </div>
 <p class="count" id="count" aria-live="polite"></p>
@@ -61,12 +74,16 @@ middlepowers.si
 <script>
 var THEMES = [
   { id: "", label: "All" },
+  { id: "law", label: "Laws and regulation" },
   { id: "safety", label: "Safety and security" },
   { id: "supply", label: "Supply chain and compute" },
   { id: "forum", label: "Governance forums" }
 ];
-var LEADS = { mp: "Middle powers", us: "US-led", cn: "China-led", un: "UN" };
-var THEME_LABEL = { safety: "Safety and security", supply: "Supply chain and compute", forum: "Governance forum" };
+var LEADS = { mp: "Middle powers", us: "US-led", cn: "China-led", eu: "EU / Council of Europe", un: "UN", intl: "G7, OECD and clubs" };
+var THEME_LABEL = { law: "Law and regulation", safety: "Safety and security", supply: "Supply chain and compute", forum: "Governance forum" };
+var OLDREG = { "Canada–EU Alliance for the Future": ["Americas", "Europe"], "UK–Canada renewed AI security partnership": ["Europe", "Americas"],
+  "Cohere and Aleph Alpha combine": ["Americas", "Europe"], "Canada–Germany Sovereign Technology Alliance": ["Americas", "Europe"],
+  "New Delhi Declaration on AI Impact": ["Global", "Asia-Pacific"] };
 var ENTRIES = [
   { sort: "2027-06-21", date: "21–22 Jun 2027", upcoming: true,
     title: "Geneva AI Summit", type: "Summit", theme: "forum", lead: "mp",
@@ -127,9 +144,49 @@ var ENTRIES = [
     title: "Pax Silica Declaration", type: "Declaration", theme: "supply", lead: "us",
     who: "United States with the UK, Japan, South Korea, Singapore, Australia and Israel at launch; later the UAE, India, the EU, Germany, the Netherlands, Italy and others",
     text: "Framework for securing AI supply chains from critical minerals to semiconductors and compute. 26 signatories as of October 2026. A separate US-led AI Opportunity Statement had 54.",
-    src: "ITIF timeline", url: "https://itif.org/publications/2026/11/03/pax-silica-timeline/" }
+    src: "ITIF timeline", url: "https://itif.org/publications/2026/11/03/pax-silica-timeline/" },
+  {"sort": "2024-08-01", "date": "1 Aug 2024", "title": "EU AI Act enters into force", "type": "Law", "theme": "law", "lead": "eu", "region": ["Europe"], "who": "European Union, 27 member states", "text": "The world's first broad AI law. It sorts AI by risk: some uses banned outright, high-risk systems tightly controlled, and duties for makers of general-purpose models. Rules switch on in stages through 2028.", "src": "EUR-Lex", "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"},
+  {"sort": "2025-02-02", "date": "2 Feb 2025", "title": "EU AI Act: banned practices apply", "type": "Law", "theme": "law", "lead": "eu", "region": ["Europe"], "who": "European Union", "text": "The first rules bite: social scoring, manipulative AI and some biometric uses become illegal in the EU, alongside a duty to train staff in AI literacy.", "src": "Cooley", "url": "https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/"},
+  {"sort": "2025-08-02", "date": "2 Aug 2025", "title": "EU AI Act: rules for general-purpose models apply", "type": "Law", "theme": "safety", "lead": "eu", "region": ["Europe"], "who": "European Union; applies to any provider placing a model on the EU market", "text": "Makers of large general-purpose models must document them, publish training-data summaries and respect copyright. The largest models carry extra duties to assess and reduce systemic risk.", "src": "IT Brief", "url": "https://itbrief.co.uk/story/everyone-read-eu-delays-ai-act-wrong-here-s-the-actual-timeline"},
+  {"sort": "2026-07-27", "date": "27 Jul 2026", "title": "EU Digital Omnibus on AI", "type": "Law", "theme": "law", "lead": "eu", "region": ["Europe"], "who": "European Union; Parliament endorsed 16 June, Council approved 29 June 2026", "text": "The first big amendment to the AI Act. It pushes the high-risk rules back by up to 16 months but leaves the bans, model rules and transparency duties on their original dates.", "src": "K&L Gates via Mondaq", "url": "https://www.mondaq.com/eu-digital-omnibus-on-ai-enters-into-force/1825722"},
+  {"sort": "2026-08-02", "date": "2 Aug 2026", "title": "EU AI Office gains enforcement powers", "type": "Law", "theme": "safety", "lead": "eu", "region": ["Europe"], "who": "European Commission, acting through the AI Office", "text": "From this date Brussels can investigate and fine providers of general-purpose models directly. Labelling duties for AI-generated content also took effect.", "src": "Wilson Sonsini", "url": "https://www.wsgrdataadvisor.com/2026/08/eu-ai-act-enforcement-phase-begins/"},
+  {"sort": "2027-12-02", "date": "2 Dec 2027", "title": "EU AI Act: high-risk rules apply (Annex III)", "type": "Law", "theme": "law", "lead": "eu", "region": ["Europe"], "who": "European Union", "text": "Delayed from August 2026. AI used in hiring, credit, education, policing and critical infrastructure must meet the Act's high-risk requirements. AI built into regulated products follows in August 2028.", "src": "Process Excellence Network", "url": "https://www.processexcellencenetwork.com/ai/articles/eu-ai-act-2026-what-actually-changed-and-what-deployers-still-must-do", "upcoming": true},
+  {"sort": "2024-09-05", "date": "5 Sep 2024", "title": "Council of Europe Framework Convention on AI", "type": "Treaty", "theme": "law", "lead": "eu", "region": ["Europe", "Global"], "who": "Opened for signature in Vilnius; 20 signatories as of May 2026, including the US, UK and EU", "text": "The first legally binding international treaty on AI. It commits parties to keep AI consistent with human rights, democracy and the rule of law, and is open to countries outside Europe.", "src": "Council of Europe deck via AIGL", "url": "https://www.aigl.blog/artificial-intelligence-and-human-rights-the-council-of-europe-framework-convention-on-artificial-intelligence/"},
+  {"sort": "2026-05-15", "date": "15 May 2026", "title": "EU ratifies the AI Framework Convention", "type": "Treaty", "theme": "law", "lead": "eu", "region": ["Europe"], "who": "European Union; Parliament consented in April 2026 by 455 votes to 101", "text": "The first ratification of the Council of Europe AI treaty. It needs five ratifications, three of them from Council of Europe members, to enter into force.", "src": "CASRAI", "url": "https://casrai.org/wp/?p=3079"},
+  {"sort": "2023-10-30", "date": "30 Oct 2023", "title": "US Executive Order 14110 on safe AI", "type": "Executive action", "theme": "safety", "lead": "us", "region": ["Americas"], "who": "United States federal government", "text": "Required developers of the most powerful models to share safety test results with the government. Revoked in January 2025 by the incoming administration.", "src": "Mayer Brown", "url": "https://www.mayerbrown.com/zh-hans/insights/publications/2025/12/president-trump-issues-executive-order-on-ensuring-a-national-policy-framework-for-artificial-intelligence"},
+  {"sort": "2025-01-23", "date": "23 Jan 2025", "title": "US Executive Order 14179: removing barriers to AI", "type": "Executive action", "theme": "law", "lead": "us", "region": ["Americas"], "who": "United States federal government", "text": "Replaced the safety-first approach with one aimed at 'AI dominance' and ordered a national AI action plan.", "src": "GovInfo", "url": "https://www.govinfo.gov/content/pkg/DCPD-202501186/html/DCPD-202501186.htm"},
+  {"sort": "2025-05-19", "date": "May 2025", "title": "US TAKE IT DOWN Act", "type": "Law", "theme": "safety", "lead": "us", "region": ["Americas"], "who": "United States Congress; signed by the President", "text": "Federal law against non-consensual intimate images, including AI deepfakes. Platforms must remove reported images quickly.", "src": "White House via UCSB", "url": "https://www.presidency.ucsb.edu/node/379262"},
+  {"sort": "2025-07-23", "date": "Jul 2025", "title": "America's AI Action Plan", "type": "Executive action", "theme": "law", "lead": "us", "region": ["Americas", "Global"], "who": "White House", "text": "The US blueprint for 'winning the AI race': cut regulation, build data centres fast and export the American AI stack to allies.", "src": "Skadden", "url": "https://www.skadden.com/insights/publications/2025/12/white-house-launches-national-framework"},
+  {"sort": "2025-12-11", "date": "11 Dec 2025", "title": "US Executive Order 14365: national AI framework", "type": "Executive action", "theme": "law", "lead": "us", "region": ["Americas"], "who": "White House; DOJ AI Litigation Task Force", "text": "Sets out to override state AI laws seen as burdensome, through lawsuits and federal funding conditions. Child safety and data-centre rules are carved out.", "src": "GovInfo", "url": "https://www.govinfo.gov/content/pkg/DCPD-202501186/html/DCPD-202501186.htm"},
+  {"sort": "2025-09-29", "date": "29 Sep 2025", "title": "California SB 53: frontier AI transparency law", "type": "Law", "theme": "safety", "lead": "us", "region": ["Americas"], "who": "State of California", "text": "The first US law aimed at frontier models. The biggest developers must publish safety frameworks, report serious incidents and protect whistleblowers.", "src": "Future of Privacy Forum", "url": "https://fpf.org/blog/californias-sb-53-the-first-frontier-ai-law-explained/"},
+  {"sort": "2025-12-19", "date": "19 Dec 2025", "title": "New York RAISE Act", "type": "Law", "theme": "safety", "lead": "us", "region": ["Americas"], "who": "State of New York; amended March 2026 to align with California", "text": "Second US state frontier-AI law. Large developers must publish safety protocols and report serious incidents, overseen by a new office in the state financial regulator.", "src": "IAPP", "url": "https://iapp.org/news/a/the-new-frontier-lessons-from-california-s-sb-53-and-new-york-s-raise-act"},
+  {"sort": "2026-05-14", "date": "14 May 2026", "title": "Colorado rewrites its AI Act", "type": "Law", "theme": "law", "lead": "us", "region": ["Americas"], "who": "State of Colorado", "text": "The first US law on algorithmic discrimination was scaled back to a disclosure regime before it ever applied. It now takes effect on 1 January 2027.", "src": "Hunton", "url": "https://www.hunton.com/privacy-and-information-security-law/colorado-ai-act-amended-and-effective-date-delayed"},
+  {"sort": "2023-08-15", "date": "15 Aug 2023", "title": "China: Interim Measures for generative AI", "type": "Law", "theme": "law", "lead": "cn", "region": ["Asia-Pacific"], "who": "Cyberspace Administration of China and six other agencies", "text": "One of the first binding rules for chatbots anywhere. Public generative AI services must register, keep content within the law and protect user data.", "src": "CAC", "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm"},
+  {"sort": "2025-07-26", "date": "26 Jul 2025", "title": "China's Global AI Governance Action Plan", "type": "Declaration", "theme": "forum", "lead": "cn", "region": ["Global", "Asia-Pacific"], "who": "Issued by China at the World AI Conference, Shanghai", "text": "Beijing's offer to the world: open-source sharing, capacity building for the Global South and a proposed global AI cooperation body.", "src": "Mayer Brown", "url": "https://www.mayerbrown.com/en/insights/publications/2025/10/artificial-intelligence-a-brave-new-world-china-formulates-new-ai-global--governance-action-plan-and-issues-draft-ethics-rules-and-ai-labelling-rules"},
+  {"sort": "2025-09-01", "date": "1 Sep 2025", "title": "China: mandatory labels for AI content", "type": "Law", "theme": "law", "lead": "cn", "region": ["Asia-Pacific"], "who": "CAC, MIIT, Ministry of Public Security and NRTA", "text": "AI-generated text, images, audio and video must carry a visible label and a hidden machine-readable mark. The first nationwide rule of its kind.", "src": "Caixin", "url": "https://www.caixinglobal.com/2025-09-03/china-enforces-ai-content-labeling-rules-to-curb-misuse-102358308.html"},
+  {"sort": "2025-06-04", "date": "4 Jun 2025", "title": "Japan AI Promotion Act in force", "type": "Law", "theme": "law", "lead": "mp", "region": ["Asia-Pacific"], "who": "Government of Japan", "text": "A light-touch law: no penalties, but a cabinet-level AI strategy headquarters and a duty on companies to cooperate with government guidance.", "src": "PPC Land", "url": "https://ppc.land/asias-ai-laws-are-finally-here-and-they-couldnt-be-more-different/"},
+  {"sort": "2026-01-22", "date": "22 Jan 2026", "title": "South Korea AI Basic Act in force", "type": "Law", "theme": "law", "lead": "mp", "region": ["Asia-Pacific"], "who": "Republic of Korea; enacted January 2025", "text": "The second broad AI law after the EU's. Covers high-impact AI, labelling of generated content, and a safety institute. Fines are paused for at least a year while firms adjust.", "src": "Cooley", "url": "https://cdp.cooley.com/south-koreas-ai-basic-act-overview-and-key-takeaways/"},
+  {"sort": "2025-12-10", "date": "10 Dec 2025", "title": "Vietnam Law on Artificial Intelligence", "type": "Law", "theme": "law", "lead": "mp", "region": ["Asia-Pacific"], "who": "National Assembly of Vietnam; in force 1 March 2026", "text": "A risk-based law that borrows from the EU and Korea: banned uses, checks on high-risk systems listed by the Prime Minister, and sandboxes plus a fund for startups.", "src": "Viet Nam News", "url": "https://vietnamnews.vn/politics-laws/1731611/na-passes-first-ever-law-on-artificial-intelligence.html"},
+  {"sort": "2024-12-10", "date": "10 Dec 2024", "title": "Brazil AI bill (PL 2338) passes the Senate", "type": "Bill", "theme": "law", "lead": "mp", "region": ["Americas"], "who": "Federal Senate of Brazil; still awaiting a committee opinion in the Chamber as of Nov 2026", "text": "An EU-style, rights-based framework with risk tiers and pay for creators whose work trains AI. Not law yet: the Chamber vote slipped past the 2026 election.", "src": "CASRAI", "url": "https://casrai.org/guides/brazil-ai-bill-pl-2338-status"},
+  {"sort": "2023-11-01", "date": "1 Nov 2023", "title": "Bletchley Declaration", "type": "Declaration", "theme": "safety", "lead": "mp", "region": ["Global"], "who": "28 countries and the EU, including the US and China; hosted by the UK", "text": "The first time governments jointly said frontier AI could cause serious, even catastrophic harm. It launched the summit series and the international safety report.", "src": "GOV.UK", "url": "https://www.gov.uk/government/publications/ai-safety-summit-2023-the-bletchley-declaration/the-bletchley-declaration-by-countries-attending-the-ai-safety-summit-1-2-november-2023"},
+  {"sort": "2024-05-21", "date": "21 May 2024", "title": "Seoul Declaration and Frontier AI Safety Commitments", "type": "Declaration", "theme": "safety", "lead": "mp", "region": ["Global"], "who": "Co-hosted by South Korea and the UK; 16 AI companies signed the commitments", "text": "Companies including OpenAI, Google DeepMind, Anthropic and Zhipu AI pledged to publish safety frameworks and set risk thresholds. Voluntary, with no enforcement.", "src": "GOV.UK", "url": "https://www.gov.uk/government/publications/frontier-ai-safety-commitments-ai-seoul-summit-2024"},
+  {"sort": "2024-11-20", "date": "Nov 2024", "title": "International Network of AI Safety Institutes", "type": "Institution", "theme": "safety", "lead": "us", "region": ["Global"], "who": "Founded in San Francisco by the US, UK, EU, Japan, Korea, Singapore, Canada, France, Kenya and Australia", "text": "Brings government AI testing bodies together to share evaluation methods. Its direction shifted as the US and UK recast their institutes around security.", "src": "Brookings", "url": "https://www.brookings.edu/articles/the-bletchley-park-process-could-be-a-building-block-for-global-cooperation-on-ai-safety"},
+  {"sort": "2025-02-11", "date": "11 Feb 2025", "title": "Paris AI Action Summit statement", "type": "Declaration", "theme": "forum", "lead": "mp", "region": ["Global"], "who": "Co-chaired by France and India; about 60 signatories including China. The US and UK declined", "text": "A pledge for 'inclusive and sustainable' AI. The refusal of Washington and London to sign was the first open split in the summit series.", "src": "TechCrunch", "url": "https://techcrunch.com/2025/02/11/as-us-and-uk-refuse-to-sign-ai-action-summit-statement-countries-fail-to-agree-on-the-basics"},
+  {"sort": "2026-02-03", "date": "3 Feb 2026", "title": "International AI Safety Report 2026", "type": "Report", "theme": "safety", "lead": "intl", "region": ["Global"], "who": "Chaired by Yoshua Bengio; over 100 experts, advisers nominated by 30+ countries, the UN, OECD and EU", "text": "The shared scientific baseline on AI risk. Its headline: capabilities are moving faster than expected and risk management, while improving, is not enough.", "src": "Trowers & Hamlins", "url": "https://www.trowers.com/insights/the-second-international-ai-safety-report-navigating-uncertainty-at-the-frontier-of-ai"},
+  {"sort": "2019-05-22", "date": "May 2019", "title": "OECD AI Principles", "type": "Declaration", "theme": "forum", "lead": "intl", "region": ["Global"], "who": "OECD members and adherents; later adopted by the G20; updated May 2024", "text": "The first intergovernmental standard on AI: trustworthy, human-centred and accountable. Its definition of an AI system was borrowed by the EU AI Act.", "src": "OECD.AI", "url": "https://oecd.ai/en/ai-principles"},
+  {"sort": "2021-11-23", "date": "Nov 2021", "title": "UNESCO Recommendation on the Ethics of AI", "type": "Declaration", "theme": "forum", "lead": "un", "region": ["Global"], "who": "Adopted by all 193 UNESCO member states", "text": "The first global standard on AI ethics, covering rights, fairness and environmental impact, with readiness assessments to help countries put it into practice.", "src": "UNESCO", "url": "https://www.unesco.org/en/artificial-intelligence/recommendation-ethics"},
+  {"sort": "2023-10-30", "date": "Oct 2023", "title": "G7 Hiroshima AI Process Code of Conduct", "type": "Declaration", "theme": "safety", "lead": "intl", "region": ["Global"], "who": "G7 leaders, under Japan's presidency", "text": "Eleven voluntary practices for developers of advanced AI, later backed by a reporting framework run with the OECD.", "src": "Hiroshima AI Process", "url": "https://www.soumu.go.jp/hiroshimaaiprocess/en/index.html"},
+  {"sort": "2024-03-21", "date": "21 Mar 2024", "title": "First UN General Assembly resolution on AI", "type": "Declaration", "theme": "forum", "lead": "un", "region": ["Global"], "who": "Adopted without a vote; proposed by the US and co-sponsored by more than 120 states", "text": "Called for safe, secure and trustworthy AI that respects human rights and helps close the digital divide. Non-binding.", "src": "UN News", "url": "https://news.un.org/en/story/2024/03/1147831"},
+  {"sort": "2024-09-22", "date": "Sep 2024", "title": "Global Digital Compact", "type": "Declaration", "theme": "forum", "lead": "un", "region": ["Global"], "who": "Adopted by UN member states at the Summit of the Future", "text": "Committed the UN to create an independent scientific panel on AI and a global dialogue on AI governance, both set up the following year.", "src": "IISD SDG Knowledge Hub", "url": "https://sdg.iisd.org/?p=893747"},
+  {"sort": "2025-08-26", "date": "26 Aug 2025", "title": "UN creates AI Scientific Panel and Global Dialogue", "type": "Institution", "theme": "forum", "lead": "un", "region": ["Global"], "who": "UN General Assembly resolution A/RES/79/325, adopted by consensus", "text": "Founded the first standing UN science body on AI and an annual dialogue where all states can discuss governance.", "src": "United Nations", "url": "https://www.un.org/independent-international-scientific-panel-ai/en/faq"},
+  {"sort": "2026-02-12", "date": "12 Feb 2026", "title": "UN appoints its 40-member AI Scientific Panel", "type": "Institution", "theme": "safety", "lead": "un", "region": ["Global"], "who": "General Assembly vote, 117 to 2; the US objected. Co-chairs Yoshua Bengio and Maria Ressa", "text": "Forty experts from more than 2,600 applicants will publish an annual assessment of AI's risks and impacts for all states, not only those that build frontier models.", "src": "Euronews", "url": "https://www.euronews.com/next/2026/02/13/un-creates-first-global-ai-safety-panel-as-tech-insiders-sound-alarm-over-the-technology"}
 ];
-var state = { theme: "", lead: "", q: "" };
+ENTRIES.forEach(function (e) { if (!e.region) e.region = OLDREG[e.title] || ["Global"]; });
+var state = { theme: "", lead: "", q: "", region: "", type: "" };
+(function () {
+  var sel = document.getElementById("type");
+  ENTRIES.map(function (e) { return e.type; }).filter(function (t, i, a) { return a.indexOf(t) === i; }).sort().forEach(function (t) { var o = document.createElement("option"); o.textContent = t; sel.appendChild(o); });
+})();
 function el(tag, cls, text) {
   var n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -158,6 +215,8 @@ function render() {
   var shown = ENTRIES.slice().sort(function (a, b) { return a.sort < b.sort ? 1 : -1; }).filter(function (e) {
     if (state.theme && e.theme !== state.theme) return false;
     if (state.lead && e.lead !== state.lead) return false;
+    if (state.region && e.region.indexOf(state.region) === -1) return false;
+    if (state.type && e.type !== state.type) return false;
     if (q && (e.title + " " + e.who + " " + e.text).toLowerCase().indexOf(q) === -1) return false;
     return true;
   });
@@ -174,6 +233,7 @@ function render() {
     tags.appendChild(lead);
     tags.appendChild(el("span", "tag", e.type));
     tags.appendChild(el("span", "tag", THEME_LABEL[e.theme]));
+    tags.appendChild(el("span", "tag", e.region.join(" · ")));
     body.appendChild(tags);
     body.appendChild(el("p", "", e.text));
     body.appendChild(el("p", "who", e.who));
@@ -193,6 +253,8 @@ renderChips();
 render();
 document.getElementById("q").addEventListener("input", function (ev) { state.q = ev.target.value; render(); });
 document.getElementById("lead").addEventListener("change", function (ev) { state.lead = ev.target.value; render(); });
+document.getElementById("region").addEventListener("change", function (ev) { state.region = ev.target.value; render(); });
+document.getElementById("type").addEventListener("change", function (ev) { state.type = ev.target.value; render(); });
 </script>
 </body>
 </html>
