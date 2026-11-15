@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>middlepowers.ai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow reading column; a ledger of dated entries with a
+   mono date rail on the left; honey accent marks only what is live or next. */
+:root {
+  --paper: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #131c2e;
+  --muted: #5a657a;
+  --line: #d5dbe5;
+  --accent: #e2a100;
+  --accent-ink: #7a5600;
+  --us: #2f5fb3;
+  --cn: #b3402f;
+  --un: #2c8a7a;
+  --mp: #7a5600;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1626;
+    --surface: #17203a;
+    --ink: #e9edf5;
+    --muted: #9aa6bd;
+    --line: #2b3655;
+    --accent: #f2b824;
+    --accent-ink: #f2b824;
+    --us: #7fa6ee;
+    --cn: #ee8c7c;
+    --un: #6fcdbb;
+    --mp: #f2b824;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1626;
+  --surface: #17203a;
+  --ink: #e9edf5;
+  --muted: #9aa6bd;
+  --line: #2b3655;
+  --accent: #f2b824;
+  --accent-ink: #f2b824;
+  --us: #7fa6ee;
+  --cn: #ee8c7c;
+  --un: #6fcdbb;
+  --mp: #f2b824;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+}
+a { color: inherit; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 2px;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+header.top { border-bottom: 1px solid var(--line); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; padding: 14px 0; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 0.95rem; }
+nav a { text-decoration: none; color: var(--muted); padding: 4px 0; }
+nav a:hover { color: var(--ink); }
+
+.intro { padding: 36px 0 28px; }
+.intro h1 { font-size: clamp(1.9rem, 6vw, 2.8rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
+.intro p { margin: 0; max-width: 60ch; color: var(--muted); }
+.working { display: inline-block; margin-top: 16px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); border: 1px dashed var(--line); padding: 3px 8px; border-radius: 4px; }
+
+.next { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 36px; }
+.next div { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 6px; padding: 12px 14px; }
+.next .days { font-family: var(--font-mono); font-weight: 700; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.next .what { font-weight: 700; }
+.next .when { color: var(--muted); font-size: 0.9rem; }
+
+section { padding: 8px 0 40px; }
+h2 { font-size: 1.45rem; letter-spacing: -0.01em; margin: 0 0 6px; text-wrap: balance; }
+.sub { color: var(--muted); margin: 0 0 18px; max-width: 60ch; }
+
+.controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button {
+  font: inherit; font-size: 0.9rem; cursor: pointer;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px;
+}
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+.row input, .row select {
+  font: inherit; font-size: 0.95rem; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0;
+}
+.row input { flex: 1 1 200px; }
+.count { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); margin: 0 0 10px; }
+
+.ledger { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.entry { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; grid-template-columns: 104px 1fr; gap: 6px 16px; }
+.entry.upcoming { border-left: 4px solid var(--accent); }
+.entry .date { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.entry h3 { margin: 0 0 6px; font-size: 1.08rem; line-height: 1.3; }
+.entry p { margin: 0 0 8px; overflow-wrap: anywhere; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.tag { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--muted); white-space: nowrap; }
+.tag.lead { border-color: currentColor; }
+.tag.lead.mp { color: var(--mp); } .tag.lead.us { color: var(--us); }
+.tag.lead.cn { color: var(--cn); } .tag.lead.un { color: var(--un); }
+.tag.status-up { background: var(--accent); color: #1b1300; border-color: var(--accent); }
+.src { font-size: 0.88rem; color: var(--muted); }
+@media (max-width: 520px) {
+  .entry { grid-template-columns: 1fr; }
+  .entry .date { padding-top: 0; }
+}
+.empty { color: var(--muted); padding: 20px 0; }
+
+.briefing { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.briefing .kicker { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-ink); margin: 0 0 6px; }
+.briefing h3 { font-size: 1.3rem; margin: 0 0 10px; line-height: 1.2; text-wrap: balance; }
+.briefing p { max-width: 62ch; margin: 0 0 12px; }
+.briefing p:last-child { margin-bottom: 0; }
+
+.reading { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.reading li { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.reading .meta { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+
+footer { border-top: 1px solid var(--line); padding: 22px 0 40px; color: var(--muted); font-size: 0.9rem; }
+footer p { margin: 0 0 8px; max-width: 62ch; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="#top" id="top">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+        <circle cx="16" cy="16" r="14"/>
+        <ellipse cx="16" cy="16" rx="5.5" ry="14"/>
+        <ellipse cx="16" cy="16" rx="10.5" ry="14"/>
+        <line x1="2" y1="16" x2="30" y2="16"/>
+        <path d="M4.2 9h23.6M4.2 23h23.6"/>
+        <circle cx="16" cy="16" r="2.2" fill="var(--accent)" stroke="none"/>
+      </svg>
+      middlepowers.ai
+    </a>
+    <nav aria-label="Sections">
+      <a href="#tracker">Tracker</a>
+      <a href="#briefing">Briefing</a>
+      <a href="#reading">Reading</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Who is coordinating with whom on AI, outside Washington and Beijing</h1>
+    <p>A tracker of the declarations, pacts and summits through which middle powers are trying to shape AI together, with plain-language briefings on what they add up to.</p>
+    <span class="working">First draft · updated 15 Nov 2026</span>
+  </div>
+
+  <div class="next" aria-label="Upcoming dates">
+    <div>
+      <div class="days" id="d-un">–</div>
+      <div class="what">UN Global Dialogue, second session</div>
+      <div class="when">New York · 3–4 May 2027</div>
+    </div>
+    <div>
+      <div class="days" id="d-ge">–</div>
+      <div class="what">Geneva AI Summit</div>
+      <div class="when">Palexpo, Geneva · 21–22 June 2027</div>
+    </div>
+  </div>
+
+  <section id="tracker">
+    <h2>Tracker</h2>
+    <p class="sub">Every entry links to a primary document or a named report. Signatory counts move, so each count carries its date.</p>
+    <div class="controls">
+      <div class="chips" id="themes" role="group" aria-label="Filter by theme"></div>
+      <div class="row">
+        <input id="q" type="search" placeholder="Search a country or name" aria-label="Search entries">
+        <select id="lead" aria-label="Filter by who leads">
+          <option value="">Led by anyone</option>
+          <option value="mp">Middle powers</option>
+          <option value="us">United States</option>
+          <option value="cn">China</option>
+          <option value="un">United Nations</option>
+        </select>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+    <ol class="ledger" id="ledger"></ol>
+  </section>
+
+  <section id="briefing">
+    <h2>Briefing</h2>
+    <p class="sub">Short explainers that connect the entries above.</p>
+    <article class="briefing">
+      <p class="kicker">No. 1 · November 2026</p>
+      <h3>Three offers and a deadline</h3>
+      <p>A country that is neither the United States nor China now has three tables it can sit at. Washington's is Pax Silica: a supply-chain club running from minerals to chips to compute, with 26 signatories by October. Beijing's is the World AI Cooperation Organization, founded in Shanghai in July by 29 states, with no G7 member among them.</p>
+      <p>The third table is the one middle powers are building for themselves, and it is the least finished. It has no secretariat and no single text. What it has is a cluster of overlapping moves in ten weeks: the Finnish-Norwegian call for control of frontier models in September, the renewed UK–Canada security pact in October, the Canada–EU alliance at Montreal, and the Paris Call in November.</p>
+      <p>Membership overlaps more than the rhetoric suggests. Germany signed Pax Silica in June and the frontier-model call in September. Kazakhstan has signed both of those and is a founding member of the Shanghai organization too. Hedging across tables is the common strategy.</p>
+      <p>The date that turns this into a test is 21 June 2027, when the fifth AI summit opens in Geneva. Whether the third table arrives there with one shared ask, or several competing ones, is the thing to watch.</p>
+    </article>
+  </section>
+
+  <section id="reading">
+    <h2>Reading</h2>
+    <p class="sub">The papers shaping the debate this year.</p>
+    <ul class="reading">
+      <li><a href="https://www.chathamhouse.org/2026/10/can-uk-drive-middle-power-coordination-ai">Can the UK drive middle power coordination on AI?</a><span class="meta">Chatham House · Oct 2026</span></li>
+      <li><a href="https://www.brookings.edu/articles/middle-power-ai-agency-preserving-choice-between-the-united-states-and-china/">Middle power AI agency: Preserving choice between the United States and China</a><span class="meta">Brookings · Sep 2026</span></li>
+      <li><a href="https://www.aspistrategist.org.au/to-secure-frontier-ai-access-australias-best-bet-is-a-coalition-of-the-dependent/">To secure frontier AI access, Australia's best bet is a coalition of the dependent</a><span class="meta">ASPI Strategist · Sep 2026</span></li>
+      <li><a href="https://www.newamerica.org/?p=62437">Middle Powers and the Shape of AI Governance: Three Experts Weigh In</a><span class="meta">New America · 2026</span></li>
+      <li><a href="https://chathamhouse.org/2026/02/how-middle-powers-can-weather-us-and-chinese-ai-dominance">How middle powers can weather US and Chinese AI dominance</a><span class="meta">Chatham House · Feb 2026</span></li>
+      <li><a href="https://www.jiia.or.jp/eng/report/2026/03/strategic_comment_2026-6.html">Racing Ahead, Falling Apart: Middle Powers and the Future of Military AI Governance</a><span class="meta">JIIA · Mar 2026</span></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Method.</strong> An entry qualifies if it is a signed text, a standing body or a scheduled intergovernmental meeting that bears on how states other than the US and China coordinate on AI. US-led and China-led initiatives are included because middle powers are choosing whether to join them.</p>
+    <p>"Middle power" has no agreed definition. This tracker uses it loosely for states with real AI capacity or leverage that still depend on frontier systems built elsewhere.</p>
+  </div>
+</footer>
+
+<script>
+var THEMES = [
+  { id: "", label: "All" },
+  { id: "safety", label: "Safety and security" },
+  { id: "supply", label: "Supply chain and compute" },
+  { id: "forum", label: "Governance forums" }
+];
+var LEADS = { mp: "Middle powers", us: "US-led", cn: "China-led", un: "UN" };
+var THEME_LABEL = { safety: "Safety and security", supply: "Supply chain and compute", forum: "Governance forum" };
+
+var ENTRIES = [
+  { sort: "2027-06-21", date: "21–22 Jun 2027", upcoming: true,
+    title: "Geneva AI Summit", type: "Summit", theme: "forum", lead: "mp",
+    who: "Hosted by Switzerland",
+    text: "Fifth summit in the series that began at Bletchley Park in 2023 and ran through Seoul, Paris and New Delhi. Held at Palexpo.",
+    src: "Swiss Federal Office of Communications", url: "https://www.bakom.admin.ch/en/geneva-ai-summit-2027-international-summit-on-artificial-intelligence-in-geneva" },
+  { sort: "2026-11-09", date: "9 Nov 2026",
+    title: "Paris Call for AI Safety and Security", type: "Declaration", theme: "safety", lead: "mp",
+    who: "Canada, France, Bahrain, Finland, Norway, Netherlands, plus ten AI companies",
+    text: "Governments and companies including Anthropic, OpenAI, Mistral and Cohere commit to common evaluation standards and to focus on dangerous misuse and loss of control. Non-binding and open to further signatories; list as of signing.",
+    src: "The Globe and Mail", url: "https://theglobeandmail.com/business/article-canada-joins-paris-call-for-ai-safety-and-security-standards-pledge" },
+  { sort: "2026-10-30", date: "30 Oct 2026",
+    title: "Canada–EU Alliance for the Future", type: "Bilateral pact", theme: "supply", lead: "mp",
+    who: "Canada, European Union",
+    text: "Announced at the Montreal summit. Covers AI, energy and critical minerals, and opens European supercomputers to Canadian researchers and firms. Described as open to other like-minded countries.",
+    src: "The Independent via AOL", url: "https://www.aol.com/articles/canada-eu-announce-alliance-response-224044000.html" },
+  { sort: "2026-10-13", date: "13 Oct 2026",
+    title: "UK–Canada renewed AI security partnership", type: "Bilateral pact", theme: "safety", lead: "mp",
+    who: "United Kingdom, Canada",
+    text: "Renews the 2024 partnership between the two national AI institutes. Three priorities: interoperable security standards, more information sharing, and closer technical cooperation.",
+    src: "UK Government", url: "https://www.gov.uk/government/news/uk-canada-renewed-ai-security-partnership" },
+  { sort: "2026-09-22", date: "Sep 2026",
+    title: "Partners for Multilateralism (P4M)", type: "Coalition", theme: "forum", lead: "mp",
+    who: "Canada and other middle powers and developing countries",
+    text: "Coalition announced at the UN General Assembly. AI is one item on a wide agenda that also includes international law and economic governance. Few details published so far.",
+    src: "The Peak", url: "https://www.readthepeak.com/p/carney-is-doubling-down-on-his-middle-powers-pitch" },
+  { sort: "2026-09-21", date: "21 Sep 2026",
+    title: "A Call for Control of Frontier AI Models", type: "Declaration", theme: "safety", lead: "mp",
+    who: "Led by Finland and Norway; 20 countries and the European Commission at launch, including Australia, Canada, Germany, Kazakhstan, Singapore and the UAE",
+    text: "Asks for stronger oversight of the most capable models and for states to explore an international institution that sets standards and enables verification. France, Greece, Portugal and others endorsed in the following week.",
+    src: "Finnish Government", url: "https://valtioneuvosto.fi/en/-/a-call-for-control-of-frontier-ai-models" },
+  { sort: "2026-09-16", date: "16 Sep 2026",
+    title: "Cohere and Aleph Alpha combine", type: "Company deal", theme: "supply", lead: "mp",
+    who: "Canada, Germany",
+    text: "Definitive agreement signed after the plan was announced in April. The company will operate as Cohere, with bases in both countries. Still subject to regulatory approval.",
+    src: "Schwarz Digits", url: "https://schwarz-digits.de/en/presse/archive/2026/cohere-and-aleph-alpha-sign-agreement" },
+  { sort: "2026-07-16", date: "16 Jul 2026",
+    title: "World AI Cooperation Organization (WAICO)", type: "Organisation", theme: "forum", lead: "cn",
+    who: "29 founding states including China, Russia, Brazil, Indonesia, Pakistan and Kazakhstan",
+    text: "Intergovernmental body headquartered in Shanghai, first proposed by China in 2025. Eight more states acceded shortly after the signing. No G7 economy is a founding member.",
+    src: "Shanghai Municipal Government", url: "https://english.shanghai.gov.cn/en-WAICHighlights/20260717/bf06ab51a50a43a58e1d1c63855df461.html" },
+  { sort: "2026-07-06", date: "6–7 Jul 2026",
+    title: "UN Global Dialogue on AI Governance", type: "Forum", theme: "forum", lead: "un",
+    who: "All UN member states; delegations from 163 countries attended",
+    text: "First annual session, held in Geneva under the Global Digital Compact. The second session is scheduled for New York on 3–4 May 2027.",
+    src: "United Nations", url: "https://www.un.org/global-dialogue-ai-governance/en/faq" },
+  { sort: "2026-02-14", date: "Feb 2026",
+    title: "Canada–Germany Sovereign Technology Alliance", type: "Bilateral pact", theme: "supply", lead: "mp",
+    who: "Canada, Germany",
+    text: "Launched at the Munich Security Conference to build sovereign AI capacity and reduce strategic technology dependencies. It is the political frame for the Cohere and Aleph Alpha deal.",
+    src: "TechCrunch", url: "https://techcrunch.com/2026/04/25/why-cohere-is-merging-with-aleph-alpha/" },
+  { sort: "2025-12-12", date: "12 Dec 2025",
+    title: "Pax Silica Declaration", type: "Declaration", theme: "supply", lead: "us",
+    who: "United States with the UK, Japan, South Korea, Singapore, Australia and Israel at launch; later the UAE, India, the EU, Germany, the Netherlands, Italy and others",
+    text: "Framework for securing AI supply chains from critical minerals to semiconductors and compute. 26 signatories as of October 2026. A separate US-led AI Opportunity Statement had 54.",
+    src: "ITIF timeline", url: "https://itif.org/publications/2026/11/03/pax-silica-timeline/" }
+];
+
+var state = { theme: "", lead: "", q: "" };
+
+function el(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderChips() {
+  var box = document.getElementById("themes");
+  THEMES.forEach(function (t) {
+    var b = el("button", "", t.label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(state.theme === t.id));
+    b.addEventListener("click", function () {
+      state.theme = t.id;
+      Array.prototype.forEach.call(box.children, function (c) { c.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      render();
+    });
+    box.appendChild(b);
+  });
+}
+
+function render() {
+  var list = document.getElementById("ledger");
+  list.textContent = "";
+  var q = state.q.trim().toLowerCase();
+  var shown = ENTRIES.filter(function (e) {
+    if (state.theme && e.theme !== state.theme) return false;
+    if (state.lead && e.lead !== state.lead) return false;
+    if (q && (e.title + " " + e.who + " " + e.text).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  shown.forEach(function (e) {
+    var li = el("li", "entry" + (e.upcoming ? " upcoming" : ""));
+    li.appendChild(el("div", "date", e.date));
+    var body = el("div");
+    body.appendChild(el("h3", "", e.title));
+    var tags = el("div", "tags");
+    if (e.upcoming) tags.appendChild(el("span", "tag status-up", "Upcoming"));
+    tags.appendChild(el("span", "tag lead " + e.lead, LEADS[e.lead]));
+    tags.appendChild(el("span", "tag", e.type));
+    tags.appendChild(el("span", "tag", THEME_LABEL[e.theme]));
+    body.appendChild(tags);
+    body.appendChild(el("p", "", e.text));
+    body.appendChild(el("p", "", e.who));
+    var src = el("div", "src", "Source: ");
+    var a = el("a", "", e.src);
+    a.href = e.url;
+    a.rel = "noopener";
+    src.appendChild(a);
+    body.appendChild(src);
+    li.appendChild(body);
+    list.appendChild(li);
+  });
+  if (!shown.length) list.appendChild(el("li", "empty", "No entries match. Clear the search or pick another filter."));
+  document.getElementById("count").textContent =
+    shown.length + " of " + ENTRIES.length + " entries, newest first";
+}
+
+function daysUntil(y, m, d) {
+  var now = new Date();
+  var a = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  var n = Math.round((Date.UTC(y, m - 1, d) - a) / 86400000);
+  if (n > 1) return n + " days";
+  if (n === 1) return "Tomorrow";
+  if (n === 0) return "Today";
+  return "Held";
+}
+
+renderChips();
+render();
+document.getElementById("q").addEventListener("input", function (ev) { state.q = ev.target.value; render(); });
+document.getElementById("lead").addEventListener("change", function (ev) { state.lead = ev.target.value; render(); });
+document.getElementById("d-un").textContent = daysUntil(2027, 5, 3);
+document.getElementById("d-ge").textContent = daysUntil(2027, 6, 21);
+</script>
+</body>
+</html>
