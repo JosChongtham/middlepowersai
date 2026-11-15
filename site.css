@@ -8,16 +8,16 @@ a:hover { color: #1F3FBF; }
 table, .date { font-variant-numeric: tabular-nums; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #C5CEE0; background: #FFFFFF; color: #0E1116; }
+.chip { font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #AEB7C6; background: #FFFFFF; color: #0E1116; }
 .chip:hover { border-color: #0E1116; }
 .chip[aria-pressed="true"] { background: #DCE4FA; border-color: #DCE4FA; color: #17307A; }
 .filters { display: flex; flex-wrap: wrap; gap: 10px; }
-.field { font: inherit; font-size: 16px; min-height: 46px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #C5CEE0; background: #FFFFFF; color: #0E1116; min-width: 0; }
+.field { font: inherit; font-size: 16px; min-height: 46px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #AEB7C6; background: #FFFFFF; color: #0E1116; min-width: 0; }
 .field.search { flex: 1 1 240px; }
 .count { margin: 0; font-family: 'Atkinson Hyperlegible Mono', Menlo, monospace; font-size: 13px; color: #4A5361; }
 .entries { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
-.entry { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 22px; padding: 22px 26px; border-radius: 28px; background: linear-gradient(180deg, #F6F7F9 0%, #E8EBF0 100%); }
-.entry.up { background: linear-gradient(180deg, #F6F7F9 0%, #E8EBF0 100%); }
+.entry { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 22px; padding: 22px 26px; border-radius: 28px; background: linear-gradient(180deg, #FBFCFD 0%, #EEF0F4 100%); border: 1px solid #CDD3DD; }
+.entry.up { background: linear-gradient(180deg, #FBFCFD 0%, #EEF0F4 100%); }
 .entry .date { font-family: 'Atkinson Hyperlegible Mono', Menlo, monospace; font-size: 14px; color: #4A5361; padding-top: 5px; }
 .entry h2 { margin: 0 0 8px; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
 .entry p { margin: 0 0 8px; font-size: 16px; line-height: 1.55; color: #2A313C; overflow-wrap: anywhere; }
