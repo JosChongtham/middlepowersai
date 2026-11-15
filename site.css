@@ -20,7 +20,7 @@ table, .date { font-variant-numeric: tabular-nums; }
 .entry { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 22px; padding: 22px 26px; border-radius: 28px; background: linear-gradient(180deg, #FBFCFD 0%, #EEF0F4 100%); border: 1px solid #CDD3DD; }
 .entry.up { background: linear-gradient(180deg, #FBFCFD 0%, #EEF0F4 100%); }
 .entry .date { font-family: 'Atkinson Hyperlegible Mono', Menlo, monospace; font-size: 14px; color: #4A5361; padding-top: 5px; }
-.entry h2 { margin: 0 0 8px; font-family: 'Aptos Serif', Newsreader, Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
+.entry h2 { margin: 0 0 8px; font-family: 'Source Serif 4', Georgia, serif; font-size: 24px; font-weight: 600; line-height: 1.2; }
 .entry p { margin: 0 0 8px; font-size: 16px; line-height: 1.55; color: #2A313C; overflow-wrap: anywhere; }
 .entry .who { color: #4A5361; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
