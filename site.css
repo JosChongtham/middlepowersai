@@ -3,8 +3,9 @@ body { margin: 0; background: #FFFFFF; }
 a { color: #0E1116; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 a:hover { color: #1F3FBF; }
 :focus-visible { outline: 3px solid #E2A100; outline-offset: 2px; }
-.mainnav a { padding: 6px 0; }
-.mainnav a[aria-current="page"] { text-decoration: underline; text-decoration-color: #E2A100; text-decoration-thickness: 3px; text-underline-offset: 8px; }
+.mainnav a { padding: 6px 0; text-decoration: none; border-bottom: 3px solid transparent; }
+.mainnav a:hover { border-bottom-color: #AEB7C6; }
+.mainnav a[aria-current="page"] { border-bottom-color: #0E1116; }
 table, .date { font-variant-numeric: tabular-nums; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
